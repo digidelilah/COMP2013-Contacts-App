@@ -1,0 +1,54 @@
+import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import FormComponent from "./FormComponent";
+
+export default function LoginPage() {
+  //states
+  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [postResponse, setPostResponse] = useState("");
+
+  //navaigate
+  const navigate = useNavigate();
+
+  //handlers
+  const handleOnChange = (e) => {
+    setFormData((prevData) => {
+      return { ...prevData, [e.target.name]: e.target.value };
+    });
+  };
+
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post("http://localhost:3000/login", {
+        ...formData,
+      });
+      setPostResponse(response.data.message);
+      if (response.status === 201) {
+        navigate("/private");
+      }
+    } catch (error) {
+      setPostResponse(error.response.message || "Login failed");
+    }
+  };
+
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    handleLogin();
+    setFormData({ username: "", password: "" });
+  };
+
+  return (
+    <div>
+      <h2>Login</h2>
+      <FormComponent
+        formData={formData}
+        handleOnChange={handleOnChange}
+        handleOnSubmit={handleOnSubmit}
+        currentPage=""
+        nextPage="register"
+        postResponse={postResponse}
+      />
+    </div>
+  );
+}

@@ -1,0 +1,49 @@
+import FormComponent from "./FormComponent";
+import axios from "axios";
+import { useState } from "react";
+
+export default function RegisterPage() {
+  //states
+
+  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [postResponse, setPostResponse] = useState("");
+
+  //handlers
+
+  const handleOnChange = (e) => {
+    setFormData((prevData) => {
+      return { ...prevData, [e.target.name]: e.target.value };
+    });
+  };
+
+  const handleRegister = async () => {
+    try {
+      const response = await axios.post("http://localhost:3000/register", {
+        ...formData,
+      });
+      setPostResponse(response.data.message);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }; //bug fix needed here for duplicate usernames
+
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    handleRegister();
+    setFormData({ username: "", password: "" });
+  };
+
+  return (
+    <div>
+      <h2>Register</h2>
+      <FormComponent
+        formData={formData}
+        handleOnChange={handleOnChange}
+        handleOnSubmit={handleOnSubmit}
+        currentPage="Register"
+        nextPage=""
+        postResponse={postResponse}
+      />
+    </div>
+  );
+}
