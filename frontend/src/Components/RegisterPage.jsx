@@ -23,9 +23,9 @@ export default function RegisterPage() {
       });
       setPostResponse(response.data.message);
     } catch (error) {
-      console.log(error.message);
+      setPostResponse(error.response.data.message || "Registration failed");
     }
-  }; //bug fix needed here for duplicate usernames
+  };
 
   const handleOnSubmit = (e) => {
     e.preventDefault();

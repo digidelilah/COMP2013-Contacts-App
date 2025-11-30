@@ -33,7 +33,7 @@ export default function FormComponent({
       </form>
       <p>{postResponse}</p>
       <button onClick={() => navigate(`/${nextPage}`)}>
-        {nextPage === "login" ? "Go to Login Page" : "Go to Registar Page"}
+        {nextPage === "" ? "Go to Login Page" : "Go to Registar Page"}
       </button>
     </div>
   );

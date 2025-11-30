@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import FormComponent from "./FormComponent";
+import Cookies from "js-cookie";
 
 export default function LoginPage() {
   //states
@@ -25,7 +26,8 @@ export default function LoginPage() {
       });
       setPostResponse(response.data.message);
       if (response.status === 201) {
-        navigate("/private");
+        navigate("/contacts");
+        Cookies.set("jwt-authorization", response.data.token);
       }
     } catch (error) {
       setPostResponse(error.response.message || "Login failed");

@@ -4,7 +4,7 @@ const server = express();
 const port = 3000;
 const mongoose = require("mongoose"); //import mongoose
 require("dotenv").config(); //import dotenv
-const { DB_URI } = process.env; //to grab the same variable from the dotenv file
+const { DB_URI, SECRET_KEY } = process.env; //to grab the same variable from the dotenv file
 const cors = require("cors"); //For disabling default browser security
 const Contact = require("./models/contact"); //importing the model schema
 const User = require("./models/user"); //get user model
@@ -47,17 +47,22 @@ server.post("/register", async (request, response) => {
       message: "User registered successfully",
     });
   } catch (error) {
-    response.status(500).send({ message: error.message });
+    response
+      .status(500)
+      .send({ message: "User already exists, please use another username" });
   }
 });
 
 //login route existing user
 server.post("/login", async (request, response) => {
   const { username, password } = request.body;
+
   try {
+    const user = await User.findOne({ username });
     if (!user) {
       return response.status(404).send({ message: "Cannot find user!" });
     }
+
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       return response
@@ -65,12 +70,10 @@ server.post("/login", async (request, response) => {
         .send({ message: "Incorrect username or password" });
     }
 
-    const jwwtToken = jwt.sign({ id: user._id, username }, SECRET_KEY);
+    const jwtToken = jwt.sign({ id: user._id, username }, SECRET_KEY);
     return response
       .status(201)
       .send({ message: "user authenticated", token: jwtToken });
-
-    const user = await User.findOne({ username });
   } catch (error) {
     response.status(500).send({ message: error.message });
   }
